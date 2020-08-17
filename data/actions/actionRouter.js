@@ -57,7 +57,7 @@ router.delete('/:id', validateActionId, async(req,res,next) => {
 }); // DELETE by ID
 
 //middleware 
-async function validateActionId(req,res,next) => {
+async function validateActionId(req,res,next){
    const{id}= req.params
    try {
       const action = await Actions.get(id);
@@ -76,5 +76,32 @@ async function validateActionId(req,res,next) => {
 async function validateAction(req,res,next) {
    const {body} = req;
 
-   
+   if(Object.keys(body).length === 0) {
+      next({status:400, message: "Missing Action"})
+   }
+   else if(!body.project_id) {
+      next({status: 400, message: "Project ID Required"})
+   }
+   else if(!body.description) {
+      next({status:400, message:"Project Description Required"})
+   }
+   else if (!body.description.length > 128) {
+      next({status: 400, message:"Description must be under 129 characters"})
+   }
+   else if(!body.notes) {
+      next({status: 400, message:"Notes required"})
+   }
+   else {
+      const project = await Projects.get(body.project_id);
+
+      if(project){
+         req.action = body;
+         next()
+      }
+      else{
+         next({status: 404, message: "Project not found"})
+      }
+   }
 }
+
+module.exports = router;
