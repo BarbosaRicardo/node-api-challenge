@@ -6,7 +6,6 @@ const Actions = require('./../helpers/actionModel.js')
 const router = express.Router()
 
 //routes
-
 router.get('/', async (req,res,next) => {
    const actions = await Actions.get();
    actions
